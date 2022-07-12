@@ -1,10 +1,8 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { trpc } from "~/utils/trpc";
+import Header from "~/components/Header";
 
 const Home: NextPage = () => {
-  const hello = trpc.useQuery(["hello", { text: "sir" }]);
-
   return (
     <>
       <Head>
@@ -13,9 +11,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div>
-        <h1 className="text-3xl font-bold underline">{hello.data?.greeting}</h1>
-      </div>
+      <Header />
     </>
   );
 };

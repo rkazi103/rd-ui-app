@@ -13,6 +13,7 @@
     "format:check": "prettier --check \"src/{components,pages,styles,utils,server}/**/*.{js,jsx,ts,tsx,css,scss,json,yaml,md}\""
   },
   "dependencies": {
+    "@heroicons/react": "^1.0.6",
     "@prisma/client": "4.0.0",
     "@trpc/client": "^9.25.3",
     "@trpc/next": "^9.25.3",
