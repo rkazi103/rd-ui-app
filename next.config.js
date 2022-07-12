@@ -8,6 +8,9 @@ const nextConfig = {
     config.resolve.alias["~"] = `${path.resolve(__dirname)}/src`;
     return config;
   },
+  images: {
+    domains: ["avatars.dicebear.com"],
+  },
 };
 
 module.exports = nextConfig;
