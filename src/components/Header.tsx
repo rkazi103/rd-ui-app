@@ -15,8 +15,11 @@ import {
   SearchIcon,
   MenuIcon,
 } from "@heroicons/react/solid";
+import { signIn, useSession, signOut } from "next-auth/react";
 
 const Header: NextComponentType = () => {
+  const { data: session } = useSession();
+
   return (
     <header className="sticky top-0 z-50 flex bg-white px-4 py-2 shadow-sm">
       <div className="relative h-10 w-20 flex-shrink-0 cursor-pointer">
@@ -59,6 +62,33 @@ const Header: NextComponentType = () => {
 
       <div className="ml-5 flex items-center lg:hidden">
         <MenuIcon className="header-icon" />
+      </div>
+
+      <div
+        className="hidden cursor-pointer items-center space-x-2 border border-gray-100 p-2 lg:flex"
+        onClick={session ? () => signOut() : () => signIn()}
+      >
+        <div className="relative h-5 w-5 flex-shrink-0">
+          <Image
+            src="/assets/reddit-small.png"
+            alt="Small reddit logo"
+            layout="fill"
+            objectFit="contain"
+          />
+        </div>
+
+        {session ? (
+          <div className="flex-1 text-xs">
+            <p className="truncate">{session?.user?.name}</p>
+            <p className="text-gray-400">1 Karma</p>
+          </div>
+        ) : (
+          <p className="text-gray-400">Sign In</p>
+        )}
+
+        {session && (
+          <ChevronDownIcon className="h-5 flex-shrink-0 text-gray-400" />
+        )}
       </div>
     </header>
   );

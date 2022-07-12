@@ -3,9 +3,17 @@ import type { AppProps } from "next/app";
 import { withTRPC } from "@trpc/next";
 import superjson from "superjson";
 import { AppRouter } from "~/server/routers";
+import { SessionProvider } from "next-auth/react";
 
-const MyApp = ({ Component, pageProps }: AppProps) => {
-  return <Component {...pageProps} />;
+const MyApp = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) => {
+  return (
+    <SessionProvider session={session}>
+      <Component {...pageProps} />
+    </SessionProvider>
+  );
 };
 
 export default withTRPC<AppRouter>({
@@ -31,5 +39,5 @@ export default withTRPC<AppRouter>({
   /**
    * @link https://trpc.io/docs/ssr
    */
-  ssr: true,
+  ssr: false,
 })(MyApp);
