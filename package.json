@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint --fix '{components,pages,utils,server}/**/*.{js,jsx,ts,tsx}'",
+    "lint:check": "eslint '{components,pages,utils,server}/**/*.{js,jsx,ts,tsx}'",
+    "pre-commit": "yarn run format && git add -A .",
+    "format": "prettier --write \"src/{components,pages,styles,utils,server}/**/*.{js,jsx,ts,tsx,css,scss,json,yaml,md}\"",
+    "format:check": "prettier --check \"src/{components,pages,styles,utils,server}/**/*.{js,jsx,ts,tsx,css,scss,json,yaml,md}\""
   },
   "dependencies": {
     "@prisma/client": "4.0.0",
@@ -27,8 +31,14 @@
     "@types/react-dom": "18.0.6",
     "autoprefixer": "^10.4.7",
     "eslint": "8.19.0",
-    "eslint-config-next": "12.2.2",
+    "eslint-config-next": "^12.2.2",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-react": "^7.30.1",
+    "eslint-plugin-tailwind": "^0.2.1",
+    "eslint-plugin-tailwindcss": "^3.6.0",
     "postcss": "^8.4.14",
+    "prettier": "^2.7.1",
+    "prettier-plugin-tailwindcss": "^0.1.12",
     "prisma": "^4.0.0",
     "tailwindcss": "^3.1.6",
     "typescript": "4.7.4"
