@@ -16,8 +16,8 @@ model Post {
   id          String    @id @default(uuid())
   createdAt   DateTime  @default(now())
   title       String    @db.Text
-  body        String    @db.Text
-  image       String    @db.Text
+  body        String?   @db.Text
+  image       String?   @db.Text
   username    String
   subreddit   Subreddit @relation(fields: [subredditId], references: [id])
   subredditId String
