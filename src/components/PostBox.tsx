@@ -2,6 +2,7 @@ import { LinkIcon, PhotographIcon } from "@heroicons/react/outline";
 import { NextComponentType } from "next";
 import { useSession } from "next-auth/react";
 import { FormEvent, useState } from "react";
+import toast from "react-hot-toast";
 import { trpc } from "~/utils/trpc";
 import Avatar from "./Avatar";
 
@@ -22,25 +23,60 @@ const PostBox: NextComponentType = () => {
     subreddit: "",
   });
   const [noSubreddit, setNoSubreddit] = useState(false);
-  const { data: subredditObj } = trpc.useQuery([
-    "subreddit.getSubredditById",
+
+  const { data: subredditObj, refetch: refetchSubredditData } = trpc.useQuery([
+    "subreddit.getSubredditByTopic",
     { topic: form.subreddit },
   ]);
+  const { mutateAsync: createSubreddit } = trpc.useMutation([
+    "subreddit.createSubreddit",
+  ]);
+  const { mutateAsync: createPost } = trpc.useMutation("post.createPost");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const notification = toast.loading("Creating new post...");
 
     if (form.subreddit === "") {
       setNoSubreddit(true);
       return;
     }
 
-    const isSubredditDefined = !!subredditObj;
+    try {
+      const isSubredditDefined = !!subredditObj;
 
-    if (!isSubredditDefined) {
-      // create subreddit
-    } else {
-      // use existing subreddit
+      if (!isSubredditDefined) {
+        await createSubreddit({
+          topic: form.subreddit,
+        });
+
+        const { data: newSubredditObj } = await refetchSubredditData();
+
+        await createPost({
+          username: session?.user?.name as string,
+          title: form.title,
+          subredditId: newSubredditObj?.id as string,
+          image: form.imgUrl,
+          body: form.body,
+        });
+      } else {
+        await createPost({
+          username: session?.user?.name as string,
+          title: form.title,
+          subredditId: subredditObj?.id as string,
+          image: form.imgUrl,
+          body: form.body,
+        });
+
+        setForm({ body: "", imgUrl: "", subreddit: "", title: "" });
+        toast.success("New Post Created!", {
+          id: notification,
+        });
+      }
+    } catch (e) {
+      toast.error("Something went wrong!", {
+        id: notification,
+      });
     }
   };
 

@@ -9,9 +9,9 @@ export const postRouter = createRouter().mutation("createPost", {
     image: z.string(),
     body: z.string(),
   }),
-  async resolve({ input }) {
+  async resolve({ input, ctx }) {
     try {
-      await prisma?.post.create({
+      await ctx.prisma.post.create({
         data: {
           body: input.body,
           username: input.username,
