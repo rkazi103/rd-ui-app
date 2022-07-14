@@ -6,7 +6,7 @@ const Feed: NextComponentType = () => {
   const { data: posts } = trpc.useQuery(["post.getAllPosts"]);
 
   return (
-    <div>
+    <div className="mt-5 space-y-4">
       {posts?.map(post => (
         <Post key={post.id} post={post} />
       ))}
