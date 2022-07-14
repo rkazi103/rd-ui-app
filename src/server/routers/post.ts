@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { modifyPost } from "~/utils/helpers";
+import { modifyPost, sortPosts } from "~/utils/helpers";
 import { createRouter } from "./context";
 
 export const postRouter = createRouter()
@@ -7,8 +7,8 @@ export const postRouter = createRouter()
     async resolve({ ctx }) {
       const posts = await ctx.prisma.post.findMany();
 
-      const newPosts = await Promise.all(
-        posts.map(async post => modifyPost(post, ctx))
+      const newPosts = sortPosts(
+        await Promise.all(posts.map(async post => modifyPost(post, ctx)))
       );
 
       return newPosts;
