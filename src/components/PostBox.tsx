@@ -3,6 +3,7 @@ import { NextComponentType } from "next";
 import { useSession } from "next-auth/react";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
+import { useRedditContext } from "~/contexts/RedditContext";
 import { trpc } from "~/utils/trpc";
 import Avatar from "./Avatar";
 
@@ -23,15 +24,20 @@ const PostBox: NextComponentType = () => {
     subreddit: "",
   });
   const [noSubreddit, setNoSubreddit] = useState(false);
+  const { setIsRefreshNeeded } = useRedditContext();
 
   const { data: subredditObj, refetch: refetchSubredditData } = trpc.useQuery([
     "subreddit.getSubredditByTopic",
     { topic: form.subreddit },
   ]);
-  const { mutateAsync: createSubreddit } = trpc.useMutation([
-    "subreddit.createSubreddit",
-  ]);
-  const { mutateAsync: createPost } = trpc.useMutation("post.createPost");
+  const { mutateAsync: createSubreddit } = trpc.useMutation(
+    "subreddit.createSubreddit"
+  );
+  const { mutateAsync: createPost } = trpc.useMutation("post.createPost", {
+    onSuccess: () => {
+      setIsRefreshNeeded(true);
+    },
+  });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -67,16 +73,17 @@ const PostBox: NextComponentType = () => {
           image: form.imgUrl,
           body: form.body,
         });
-
-        setForm({ body: "", imgUrl: "", subreddit: "", title: "" });
-        toast.success("New Post Created!", {
-          id: notification,
-        });
       }
+
+      toast.success("New Post Created!", {
+        id: notification,
+      });
     } catch (e) {
       toast.error("Something went wrong!", {
         id: notification,
       });
+    } finally {
+      setForm({ body: "", imgUrl: "", subreddit: "", title: "" });
     }
   };
 
