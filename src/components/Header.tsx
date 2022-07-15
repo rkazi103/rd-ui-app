@@ -16,20 +16,23 @@ import {
   MenuIcon,
 } from "@heroicons/react/solid";
 import { signIn, useSession, signOut } from "next-auth/react";
+import Link from "next/link";
 
 const Header: NextComponentType = () => {
   const { data: session } = useSession();
 
   return (
     <header className="sticky top-0 z-50 flex items-center bg-white px-4 py-2 shadow-sm">
-      <div className="relative h-10 w-20 flex-shrink-0 cursor-pointer">
-        <Image
-          src="/assets/reddit-logo.png"
-          alt="Reddit Logo"
-          layout="fill"
-          objectFit="contain"
-        />
-      </div>
+      <Link href="/">
+        <div className="relative h-10 w-20 flex-shrink-0 cursor-pointer">
+          <Image
+            src="/assets/reddit-logo.png"
+            alt="Reddit Logo"
+            layout="fill"
+            objectFit="contain"
+          />
+        </div>
+      </Link>
 
       <div className="mx-7 flex items-center xl:min-w-[300px]">
         <HomeIcon className="h-5 w-5" />

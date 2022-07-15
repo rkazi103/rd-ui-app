@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { NextComponentType, NextPageContext } from "next";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRedditContext } from "~/contexts/RedditContext";
 import { ModifiedPost } from "~/types";
 import { trpc } from "~/utils/trpc";
@@ -17,6 +18,10 @@ const Feed: NextComponentType<NextPageContext, any, FeedProps> = ({
   ]);
   const [posts, setPosts] = useState<ModifiedPost[] | undefined>(oldPosts);
   const { isRefreshNeeded, setIsRefreshNeeded } = useRedditContext();
+  const { data: filteredPosts } = trpc.useQuery([
+    "post.getPostsByTopic",
+    { topic },
+  ]);
 
   useEffect(() => {
     (async () => {
@@ -26,20 +31,11 @@ const Feed: NextComponentType<NextPageContext, any, FeedProps> = ({
     })();
   }, [getNewPosts, isRefreshNeeded, setIsRefreshNeeded]);
 
-  useEffect(() => {
-    if (topic) {
-      const filteredPosts = posts?.filter(
-        post => post.subreddit.topic === topic
-      );
-      setPosts(filteredPosts);
-    }
-  }, [posts, topic]);
-
   return (
     <div className="mt-5 space-y-4">
-      {posts?.map(post => (
-        <Post key={post.id} post={post} />
-      ))}
+      {topic
+        ? filteredPosts?.map(post => <Post key={post.id} post={post} />)
+        : posts?.map(post => <Post key={post.id} post={post} />)}
     </div>
   );
 };

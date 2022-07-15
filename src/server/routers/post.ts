@@ -14,6 +14,28 @@ export const postRouter = createRouter()
       return newPosts;
     },
   })
+  .query("getPostsByTopic", {
+    input: z.object({
+      topic: z.string().nullish(),
+    }),
+    async resolve({ input, ctx }) {
+      if (!input.topic) return undefined;
+
+      const subreddit = await ctx.prisma.subreddit.findFirst({
+        where: {
+          topic: input.topic,
+        },
+      });
+
+      const posts = await ctx.prisma.post.findMany({
+        where: {
+          subredditId: subreddit?.id as string,
+        },
+      });
+
+      return await Promise.all(posts.map(async post => modifyPost(post, ctx)));
+    },
+  })
   .mutation("createPost", {
     input: z.object({
       username: z.string(),
