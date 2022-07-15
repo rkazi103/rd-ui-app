@@ -3,11 +3,19 @@ import { useRouter } from "next/router";
 import Avatar from "~/components/Avatar";
 import Feed from "~/components/Feed";
 import PostBox from "~/components/PostBox";
+import { prisma } from "~/server/db/client";
 
-const SubredditPage: NextPage = () => {
-  const {
-    query: { topic },
-  } = useRouter();
+type SubredditPageProps = {
+  isSubredditDefined: boolean;
+};
+
+const SubredditPage: NextPage<SubredditPageProps> = ({
+  isSubredditDefined,
+}) => {
+  const router = useRouter();
+  const topic = router.query.topic as string;
+
+  if (!isSubredditDefined) router.push("/404");
 
   return (
     <div className="h-24 bg-red-400 p-8">
@@ -27,8 +35,8 @@ const SubredditPage: NextPage = () => {
       </div>
 
       <div className="mx-auto mt-5 max-w-5xl pb-10">
-        <PostBox subreddit={topic as string} />
-        <Feed topic={topic as string} />
+        <PostBox subreddit={topic} />
+        <Feed topic={topic} />
       </div>
     </div>
   );
@@ -37,5 +45,13 @@ const SubredditPage: NextPage = () => {
 export default SubredditPage;
 
 export const getServerSideProps: GetServerSideProps = async context => {
-  return { props: {} };
+  const topic = context?.params?.topic as string;
+  const subreddit = await prisma.subreddit.findFirst({
+    where: {
+      topic: topic,
+    },
+  });
+  const isSubredditDefined = !!subreddit;
+
+  return { props: { isSubredditDefined } };
 };
