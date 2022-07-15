@@ -18,15 +18,21 @@ const Feed: NextComponentType<NextPageContext, any, FeedProps> = ({
   ]);
   const [posts, setPosts] = useState<ModifiedPost[] | undefined>(oldPosts);
   const { isRefreshNeeded, setIsRefreshNeeded } = useRedditContext();
-  const { data: filteredPosts } = trpc.useQuery([
+  const { data: filteredPosts, refetch: getNewFilteredPosts } = trpc.useQuery([
     "post.getPostsByTopic",
     { topic },
   ]);
 
   useEffect(() => {
     (async () => {
-      const newPosts = await getNewPosts();
-      setPosts(newPosts.data);
+      if (topic) {
+        const { data: newFilteredPosts } = await getNewFilteredPosts();
+        setPosts(newFilteredPosts);
+      } else {
+        const { data: newPosts } = await getNewPosts();
+        setPosts(newPosts);
+      }
+
       setIsRefreshNeeded(false);
     })();
   }, [getNewPosts, isRefreshNeeded, setIsRefreshNeeded]);
