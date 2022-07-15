@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { NextComponentType, NextPageContext } from "next";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRedditContext } from "~/contexts/RedditContext";
 import { ModifiedPost } from "~/types";
 import { trpc } from "~/utils/trpc";
 import Post from "./Post";
+import Loading from "./Loading";
 
 type FeedProps = {
   topic?: string;
@@ -13,15 +14,18 @@ type FeedProps = {
 const Feed: NextComponentType<NextPageContext, any, FeedProps> = ({
   topic,
 }) => {
-  const { data: oldPosts, refetch: getNewPosts } = trpc.useQuery([
-    "post.getAllPosts",
-  ]);
+  const {
+    data: oldPosts,
+    refetch: getNewPosts,
+    isLoading: isOldPostsLoading,
+  } = trpc.useQuery(["post.getAllPosts"]);
   const [posts, setPosts] = useState<ModifiedPost[] | undefined>(oldPosts);
   const { isRefreshNeeded, setIsRefreshNeeded } = useRedditContext();
-  const { data: filteredPosts, refetch: getNewFilteredPosts } = trpc.useQuery([
-    "post.getPostsByTopic",
-    { topic },
-  ]);
+  const {
+    data: filteredPosts,
+    refetch: getNewFilteredPosts,
+    isLoading: isFilteredPostsLoading,
+  } = trpc.useQuery(["post.getPostsByTopic", { topic }]);
 
   useEffect(() => {
     (async () => {
@@ -36,6 +40,8 @@ const Feed: NextComponentType<NextPageContext, any, FeedProps> = ({
       setIsRefreshNeeded(false);
     })();
   }, [getNewPosts, isRefreshNeeded, setIsRefreshNeeded]);
+
+  if (isOldPostsLoading || isFilteredPostsLoading) return <Loading />;
 
   return (
     <div className="mt-5 space-y-4">

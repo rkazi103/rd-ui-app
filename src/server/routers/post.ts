@@ -1,3 +1,4 @@
+import { Post } from "@prisma/client";
 import { z } from "zod";
 import { modifyPost, sortPosts } from "~/utils/helpers";
 import { createRouter } from "./context";
@@ -34,6 +35,20 @@ export const postRouter = createRouter()
       });
 
       return await Promise.all(posts.map(async post => modifyPost(post, ctx)));
+    },
+  })
+  .query("getPostById", {
+    input: z.object({
+      id: z.string().uuid(),
+    }),
+    async resolve({ input, ctx }) {
+      const post = await ctx.prisma.post.findFirst({
+        where: {
+          id: input.id,
+        },
+      });
+
+      return modifyPost(post as Post, ctx);
     },
   })
   .mutation("createPost", {
