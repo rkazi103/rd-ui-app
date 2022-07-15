@@ -4,6 +4,9 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Timeago from "react-timeago";
+import Avatar from "~/components/Avatar";
+import Comment from "~/components/Comment";
 import Loading from "~/components/Loading";
 import Post from "~/components/Post";
 import { ModifiedPost } from "~/types";
@@ -90,6 +93,14 @@ const PostPage: NextPage = () => {
             Comment
           </button>
         </form>
+      </div>
+
+      <div className="-my-5 rounded-b-md border border-t-0 border-gray-300 bg-white py-5 px-10">
+        <hr className="py-2" />
+
+        {post?.comments.map(comment => (
+          <Comment key={comment.id} comment={comment} />
+        ))}
       </div>
     </div>
   );
