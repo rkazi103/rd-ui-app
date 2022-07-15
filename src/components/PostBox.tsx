@@ -1,5 +1,5 @@
 import { LinkIcon, PhotographIcon } from "@heroicons/react/outline";
-import { NextComponentType } from "next";
+import { NextComponentType, NextPageContext } from "next";
 import { useSession } from "next-auth/react";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
@@ -14,14 +14,20 @@ type FormData = {
   subreddit: string;
 };
 
-const PostBox: NextComponentType = () => {
+type PostBoxProps = {
+  subreddit?: string;
+};
+
+const PostBox: NextComponentType<NextPageContext, any, PostBoxProps> = ({
+  subreddit,
+}) => {
   const { data: session } = useSession();
   const [isImageBoxOpen, setIsImageBoxOpen] = useState<boolean>(false);
   const [form, setForm] = useState<FormData>({
     title: "",
     body: "",
     imgUrl: "",
-    subreddit: "",
+    subreddit: subreddit || "",
   });
   const [noSubreddit, setNoSubreddit] = useState(false);
   const { setIsRefreshNeeded } = useRedditContext();
@@ -49,23 +55,7 @@ const PostBox: NextComponentType = () => {
     }
 
     try {
-      const isSubredditDefined = !!subredditObj;
-
-      if (!isSubredditDefined) {
-        await createSubreddit({
-          topic: form.subreddit,
-        });
-
-        const { data: newSubredditObj } = await refetchSubredditData();
-
-        await createPost({
-          username: session?.user?.name as string,
-          title: form.title,
-          subredditId: newSubredditObj?.id as string,
-          image: form.imgUrl,
-          body: form.body,
-        });
-      } else {
+      if (subreddit) {
         await createPost({
           username: session?.user?.name as string,
           title: form.title,
@@ -73,6 +63,32 @@ const PostBox: NextComponentType = () => {
           image: form.imgUrl,
           body: form.body,
         });
+      } else {
+        const isSubredditDefined = !!subredditObj;
+
+        if (!isSubredditDefined) {
+          await createSubreddit({
+            topic: form.subreddit,
+          });
+
+          const { data: newSubredditObj } = await refetchSubredditData();
+
+          await createPost({
+            username: session?.user?.name as string,
+            title: form.title,
+            subredditId: newSubredditObj?.id as string,
+            image: form.imgUrl,
+            body: form.body,
+          });
+        } else {
+          await createPost({
+            username: session?.user?.name as string,
+            title: form.title,
+            subredditId: subredditObj?.id as string,
+            image: form.imgUrl,
+            body: form.body,
+          });
+        }
       }
 
       toast.success("New Post Created!", {
@@ -100,7 +116,11 @@ const PostBox: NextComponentType = () => {
           onChange={e => setForm({ ...form, title: e.target.value })}
           type="text"
           placeholder={
-            session ? "Create a post by entering a title" : "Sign in to post!"
+            session
+              ? subreddit
+                ? `Create a post in r/${subreddit}`
+                : "Create a post by entering a title"
+              : "Sign in to post!"
           }
           disabled={!session}
           className="flex-1 rounded-md bg-gray-50 p-2 pl-5 outline-none"
@@ -128,16 +148,18 @@ const PostBox: NextComponentType = () => {
             />
           </div>
 
-          <div className="flex items-center px-2">
-            <p className="min-w-[90px]">Subreddit:</p>
-            <input
-              value={form.subreddit}
-              onChange={e => setForm({ ...form, subreddit: e.target.value })}
-              type="text"
-              placeholder="i.e. nextjs"
-              className="m-2 flex-1 bg-blue-50 p-2 outline-none"
-            />
-          </div>
+          {!subreddit && (
+            <div className="flex items-center px-2">
+              <p className="min-w-[90px]">Subreddit:</p>
+              <input
+                value={form.subreddit}
+                onChange={e => setForm({ ...form, subreddit: e.target.value })}
+                type="text"
+                placeholder="i.e. nextjs"
+                className="m-2 flex-1 bg-blue-50 p-2 outline-none"
+              />
+            </div>
+          )}
 
           {isImageBoxOpen && (
             <div className="flex items-center px-2">
