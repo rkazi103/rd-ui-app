@@ -26,9 +26,10 @@ model Post {
 }
 
 model Subreddit {
-  id    String @id @default(uuid())
-  topic String @db.Text
-  posts Post[]
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  topic     String   @db.Text
+  posts     Post[]
 }
 
 model Comment {

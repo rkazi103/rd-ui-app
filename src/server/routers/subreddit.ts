@@ -16,6 +16,19 @@ export const subredditRouter = createRouter()
       return subreddit;
     },
   })
+  .query("getSubredditsWithLimit", {
+    input: z.object({
+      limit: z.number().min(1).max(10),
+    }),
+    async resolve({ input, ctx }) {
+      return await ctx.prisma.subreddit.findMany({
+        take: input.limit,
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    },
+  })
   .mutation("createSubreddit", {
     input: z.object({
       topic: z.string(),
