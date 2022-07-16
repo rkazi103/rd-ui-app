@@ -4,8 +4,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Timeago from "react-timeago";
-import Avatar from "~/components/Avatar";
 import Comment from "~/components/Comment";
 import Loading from "~/components/Loading";
 import Post from "~/components/Post";
