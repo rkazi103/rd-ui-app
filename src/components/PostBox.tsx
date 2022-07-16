@@ -3,7 +3,7 @@ import { NextComponentType, NextPageContext } from "next";
 import { useSession } from "next-auth/react";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
-import { useRedditContext } from "~/contexts/RedditContext";
+import { useRefresh } from "~/contexts/RefreshContext";
 import { trpc } from "~/utils/trpc";
 import Avatar from "./Avatar";
 
@@ -30,7 +30,7 @@ const PostBox: NextComponentType<NextPageContext, any, PostBoxProps> = ({
     subreddit: subreddit || "",
   });
   const [noSubreddit, setNoSubreddit] = useState(false);
-  const { setIsRefreshNeeded } = useRedditContext();
+  const { setIsRefreshNeeded } = useRefresh();
 
   const { data: subredditObj, refetch: refetchSubredditData } = trpc.useQuery([
     "subreddit.getSubredditByTopic",

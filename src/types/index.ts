@@ -7,7 +7,7 @@ export interface ModifiedPost extends Post {
   votes: Vote[];
 }
 
-export type RedditContextType = {
+export type RefreshContextType = {
   isRefreshNeeded: boolean;
   setIsRefreshNeeded: Dispatch<SetStateAction<boolean>>;
 };

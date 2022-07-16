@@ -1,6 +1,6 @@
 import { Toaster } from "react-hot-toast";
 import Header from "~/components/Header";
-import RedditProvider from "~/contexts/RedditContext";
+import RefreshProvider from "~/contexts/RefreshContext";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -8,13 +8,13 @@ type LayoutProps = {
 
 const MainLayout = ({ children }: LayoutProps) => {
   return (
-    <RedditProvider>
+    <RefreshProvider>
       <div className="h-screen overflow-y-scroll bg-slate-200 scrollbar-hide">
         <Toaster />
         <Header />
         {children}
       </div>
-    </RedditProvider>
+    </RefreshProvider>
   );
 };
 

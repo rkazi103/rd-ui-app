@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { NextComponentType, NextPageContext } from "next";
 import { useEffect, useState } from "react";
-import { useRedditContext } from "~/contexts/RedditContext";
+import { useRefresh } from "~/contexts/RefreshContext";
 import { ModifiedPost } from "~/types";
 import { trpc } from "~/utils/trpc";
 import Post from "./Post";
@@ -20,7 +20,7 @@ const Feed: NextComponentType<NextPageContext, any, FeedProps> = ({
     isLoading: isOldPostsLoading,
   } = trpc.useQuery(["post.getAllPosts"]);
   const [posts, setPosts] = useState<ModifiedPost[] | undefined>(oldPosts);
-  const { isRefreshNeeded, setIsRefreshNeeded } = useRedditContext();
+  const { isRefreshNeeded, setIsRefreshNeeded } = useRefresh();
   const {
     data: filteredPosts,
     refetch: getNewFilteredPosts,
