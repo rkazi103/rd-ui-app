@@ -29,8 +29,9 @@ To run this project, you will need to add the following environment variables to
 
 `REDDIT_CLIENT_SECRET`
 
+## Demo
 
-
+Click [here](https://rd-ui-app.vercel.app) to see a demo of the app!
 
 ## Features
 
