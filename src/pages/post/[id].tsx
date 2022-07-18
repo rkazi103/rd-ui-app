@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Comment from "~/components/Comment";
+import Head from "~/components/Head";
 import Loading from "~/components/Loading";
 import Post from "~/components/Post";
 import { ModifiedPost } from "~/types";
@@ -58,49 +59,61 @@ const PostPage: NextPage = () => {
     })();
   }, [refresh]);
 
-  if (isLoading) return <Loading />;
+  if (isLoading)
+    return (
+      <>
+        <Head description={`Page for post with id ${post?.id}`} />
+        <Loading />
+      </>
+    );
 
   return (
-    <div className="mx-auto my-7 max-w-5xl">
-      <Post post={post as ModifiedPost} />
+    <>
+      <Head description={`Page for post with id ${post?.id}`} />
 
-      <div className="-mt-1 rounded-b-md border border-t-0 border-gray-300 bg-white p-5 pl-16">
-        {session && (
-          <p className="text-sm">
-            Comment as{" "}
-            <span className="text-red-500">{session?.user?.name}</span>
-          </p>
-        )}
+      <div className="mx-auto my-7 max-w-5xl">
+        <Post post={post as ModifiedPost} />
 
-        <form className="flex flex-col space-y-2" onSubmit={handleSubmit}>
-          <textarea
-            value={comment}
-            onChange={e => setComment(e.target.value)}
-            disabled={!session}
-            className="h-24 rounded-md border border-gray-200 p-2 pl-4 outline-none disabled:bg-gray-50"
-            placeholder={
-              session ? "What are your thoughts?" : "Please sign in to comment"
-            }
-          />
+        <div className="-mt-1 rounded-b-md border border-t-0 border-gray-300 bg-white p-5 pl-16">
+          {session && (
+            <p className="text-sm">
+              Comment as{" "}
+              <span className="text-red-500">{session?.user?.name}</span>
+            </p>
+          )}
 
-          <button
-            type="submit"
-            disabled={!session}
-            className="rounded-full bg-red-500 p-3 font-semibold text-white disabled:bg-gray-200"
-          >
-            Comment
-          </button>
-        </form>
+          <form className="flex flex-col space-y-2" onSubmit={handleSubmit}>
+            <textarea
+              value={comment}
+              onChange={e => setComment(e.target.value)}
+              disabled={!session}
+              className="h-24 rounded-md border border-gray-200 p-2 pl-4 outline-none disabled:bg-gray-50"
+              placeholder={
+                session
+                  ? "What are your thoughts?"
+                  : "Please sign in to comment"
+              }
+            />
+
+            <button
+              type="submit"
+              disabled={!session}
+              className="rounded-full bg-red-500 p-3 font-semibold text-white disabled:bg-gray-200"
+            >
+              Comment
+            </button>
+          </form>
+        </div>
+
+        <div className="-my-5 rounded-b-md border border-t-0 border-gray-300 bg-white py-5 px-10">
+          <hr className="py-2" />
+
+          {post?.comments.map(comment => (
+            <Comment key={comment.id} comment={comment} />
+          ))}
+        </div>
       </div>
-
-      <div className="-my-5 rounded-b-md border border-t-0 border-gray-300 bg-white py-5 px-10">
-        <hr className="py-2" />
-
-        {post?.comments.map(comment => (
-          <Comment key={comment.id} comment={comment} />
-        ))}
-      </div>
-    </div>
+    </>
   );
 };
 

@@ -2,7 +2,7 @@
 import type { GetServerSideProps, NextPage } from "next";
 import type { Provider } from "next-auth/providers";
 import { getProviders, signIn } from "next-auth/react";
-import Head from "next/head";
+import Head from "~/components/Head";
 
 type LoginProps = {
   providers: object;
@@ -10,30 +10,29 @@ type LoginProps = {
 
 const Login: NextPage<LoginProps> = ({ providers }) => {
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center">
-      <Head>
-        <title>Login</title>
-        <link rel="icon" href="/favicon.png" />
-      </Head>
+    <>
+      <Head description="Login page" />
 
-      <img
-        src="/assets/reddit-logo.png"
-        alt="Rddit Logo"
-        className="mb-5 w-52"
-      />
+      <div className="flex min-h-screen w-full flex-col items-center justify-center">
+        <img
+          src="/assets/reddit-logo.png"
+          alt="Rddit Logo"
+          className="mb-5 w-52"
+        />
 
-      {providers &&
-        Object.values(providers).map((provider: Provider) => (
-          <div key={provider.name}>
-            <button
-              className="rounded-full bg-orange-500 p-5 text-white"
-              onClick={() => signIn(provider.id, { callbackUrl: "/" })}
-            >
-              Login with {provider.name}
-            </button>
-          </div>
-        ))}
-    </div>
+        {providers &&
+          Object.values(providers).map((provider: Provider) => (
+            <div key={provider.name}>
+              <button
+                className="rounded-full bg-orange-500 p-5 text-white"
+                onClick={() => signIn(provider.id, { callbackUrl: "/" })}
+              >
+                Login with {provider.name}
+              </button>
+            </div>
+          ))}
+      </div>
+    </>
   );
 };
 
